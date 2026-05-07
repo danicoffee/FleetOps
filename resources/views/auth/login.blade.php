@@ -23,8 +23,8 @@
         .card { border: 1px solid rgba(255,255,255,0.12); background: rgba(15,23,42,0.88); backdrop-filter: blur(18px); border-radius: 1.75rem; padding: 1.5rem; }
         .card strong { display: block; color: #f8fafc; margin-bottom: 0.5rem; }
         .card p { margin: 0.35rem 0; color: rgba(226,232,240,0.78); font-size: 0.95rem; }
-        .container { display: flex; align-items: center; justify-content: center; padding: 40px 36px; background: #020617; }
-        .form-card { width: 100%; max-width: 540px; background: rgba(15,23,42,0.96); border: 1px solid rgba(148,163,184,0.08); border-radius: 2rem; padding: 40px; box-shadow: 0 35px 90px rgba(15,23,42,0.35); }
+        .container { display: flex; align-items: center; justify-content: center; padding: 40px 36px; background: #020617; position: relative; z-index: 1; }
+        .form-card { width: 100%; max-width: 540px; position: relative; z-index: 2; background: rgba(15,23,42,0.96); border: 1px solid rgba(148,163,184,0.08); border-radius: 2rem; padding: 40px; box-shadow: 0 35px 90px rgba(15,23,42,0.35); }
         .eyebrow { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.24em; text-transform: uppercase; color: #7dd3fc; }
         .headline { margin: 1rem 0 0.65rem; font-size: clamp(2.25rem, 3.1vw, 3.5rem); line-height: 1.05; font-weight: 800; letter-spacing: -0.03em; color: #f8fafc; }
         .subtext { margin: 0; color: rgba(203,213,225,0.82); max-width: 34rem; }
@@ -67,7 +67,7 @@
                     <p>driver@fleet.com / driver123</p>
                 </div>
             </div>
-        </aside>6
+        </aside>
 
         <main class="container">
             <div class="form-card">

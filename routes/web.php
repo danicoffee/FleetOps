@@ -3,6 +3,8 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LeaveRequestController;
+use App\Http\Controllers\VehicleController;
+use App\Http\Controllers\DriverController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -30,6 +32,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('leave-requests', LeaveRequestController::class);
+    Route::resource('vehicles', VehicleController::class);
+    Route::resource('drivers', DriverController::class);
 
     Route::middleware('role:Fleet Manager')->prefix('admin')->name('admin.')->group(function () {
         Route::get('reports', [DashboardController::class, 'index'])->name('reports');
