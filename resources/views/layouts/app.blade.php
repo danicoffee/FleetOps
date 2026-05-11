@@ -103,8 +103,8 @@
                             <button type="submit" style="background:none; border:none; padding:0; color:inherit;">Logout</button>
                         </form>
                     @else
-                        <a href="{{ route('login.show') }}">Login</a>
-                        <a href="{{ route('register.show') }}">Register</a>
+                        <a href="{{ route('login') }}">Login</a>
+                        <a href="{{ route('register') }}">Register</a>
                     @endauth
                 </nav>
             </div>

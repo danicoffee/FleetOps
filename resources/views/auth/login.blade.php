@@ -52,7 +52,7 @@
         <aside class="panel">
             <div class="panel-content">
                 <div>
-                    <a href="{{ route('login.show') }}" class="brand">FleetOps Console</a>
+                    <a href="{{ route('login') }}" class="brand">FleetOps Console</a>
                 </div>
                 <div>
                     <p class="eyebrow">Fleet management</p>
@@ -102,7 +102,7 @@
                     </div>
                     <button type="submit" class="button">Sign in</button>
                 </form>
-                <p class="footer">New here? <a href="{{ route('register.show') }}">Create an account</a></p>
+                <p class="footer">New here? <a href="{{ route('register') }}">Create an account</a></p>
             </div>
         </main>
     </div>
