@@ -72,7 +72,7 @@
     </aside>
 
     <div>
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
             <div>
                 <h1 style="margin: 0 0 0.5rem 0; font-size: 1.75rem; color: #0f172a;">Drivers</h1>
                 <p style="margin: 0; color: #64748b; font-size: 0.95rem;">Manage driver records, license validity and vehicle assignments.</p>
@@ -83,12 +83,66 @@
             </button>
         </div>
 
-        <div class="empty-state">
-            <div style="text-align: center;">
-                <h2 style="margin: 0 0 0.5rem 0; font-size: 1.25rem; font-weight: 700; color: #0f172a;">No drivers yet</h2>
-                <p style="margin: 0; color: #64748b; font-size: 0.95rem;">Create your first driver record.</p>
+        @if ($drivers->isEmpty())
+            <div class="empty-state">
+                <div style="text-align: center;">
+                    <h2 style="margin: 0 0 0.5rem 0; font-size: 1.25rem; font-weight: 700; color: #0f172a;">No drivers yet</h2>
+                    <p style="margin: 0; color: #64748b; font-size: 0.95rem;">Create your first driver record.</p>
+                </div>
             </div>
-        </div>
+        @else
+            <div class="drivers-table-wrapper">
+                <table class="drivers-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>License</th>
+                            <th>Expiry</th>
+                            <th>Contact</th>
+                            <th>Assigned Vehicle</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($drivers as $driver)
+                            <tr>
+                                <td>{{ $driver->name }}</td>
+                                <td>{{ $driver->license_number }}</td>
+                                <td>
+                                    {{ $driver->license_expiry->format('Y-m-d') }}
+                                    @php
+                                        $days = $driver->license_expiry->diffInDays(now(), false);
+                                    @endphp
+                                    @if ($days >= 0 && $days <= 14)
+                                        <span class="badge badge-warning">{{ $days }}d</span>
+                                    @elseif ($days < 0)
+                                        <span class="badge badge-danger">Expired</span>
+                                    @endif
+                                </td>
+                                <td>{{ $driver->contact }}</td>
+                                <td>{{ $driver->assigned_vehicle ?? '–' }}</td>
+                                <td>
+                                    <span class="status-badge status-{{ strtolower(str_replace(' ', '-', $driver->status)) }}">{{ $driver->status }}</span>
+                                </td>
+                                <td class="actions-cell">
+                                    <button type="button" class="action-button" onclick="openEditDriverModal({{ $driver->id }})" aria-label="Edit driver">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 1rem; height: 1rem;"><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" /></svg>
+                                    </button>
+                                    <form method="POST" action="{{ route('drivers.destroy', $driver) }}" onsubmit="return confirm('Are you sure you want to delete this driver?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="action-button delete-button" aria-label="Delete driver">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 1rem; height: 1rem;"><polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" /></svg>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
     </div>
 </div>
 
@@ -158,6 +212,76 @@
         </form>
     </div>
 </div>
+
+        <!-- Edit Driver Modal -->
+        <div id="editDriverModal" class="modal">
+            <div class="modal-overlay" onclick="closeEditDriverModal()"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Edit driver</h2>
+                    <button onclick="closeEditDriverModal()" class="modal-close-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+
+                <form id="editDriverForm" class="modal-body" method="POST" action="">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Full name</label>
+                            <input id="editName" name="name" type="text" placeholder="e.g., John Doe" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label>License number</label>
+                            <input id="editLicenseNumber" name="license_number" type="text" placeholder="e.g., DL-2024-001" class="form-input" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>License expiry</label>
+                            <input id="editLicenseExpiry" name="license_expiry" type="date" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Contact</label>
+                            <input id="editContact" name="contact" type="tel" placeholder="e.g., +1 (555) 123-4567" class="form-input" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Email (optional)</label>
+                            <input id="editEmail" name="email" type="email" placeholder="e.g., john@example.com" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="editStatus" name="status" class="form-input" required>
+                                <option>Active</option>
+                                <option>Inactive</option>
+                                <option>On leave</option>
+                                <option>Suspended</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Assigned vehicle</label>
+                        <select id="editAssignedVehicle" name="assigned_vehicle" class="form-input">
+                            <option>– Unassigned –</option>
+                            <option>FL-2201 (Toyota Camry)</option>
+                            <option>FL-3315 (Honda CR-V)</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" onclick="closeEditDriverModal()" class="cancel-button">Cancel</button>
+                        <button type="submit" class="create-button">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
 <style>
     .empty-state {

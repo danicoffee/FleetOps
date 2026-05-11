@@ -72,18 +72,19 @@
     </aside>
 
     <div>
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;">
+        <div class="report-header">
             <div>
-                <h1 style="margin: 0 0 0.5rem 0; font-size: 2rem; color: #0f172a;">Reports & Analytics</h1>
-                <p style="margin: 0; color: #64748b; font-size: 0.95rem;">Fleet utilization, maintenance spend and fuel consumption.</p>
+                <h1>Reports & Analytics</h1>
+                <p>Fleet utilization, maintenance spend and fuel consumption.</p>
             </div>
-            <button style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.8rem 1.25rem; background: #ffffff; color: #0f172a; border: 1px solid #e2e8f0; border-radius: 0.85rem; font-weight: 600; font-size: 0.95rem; cursor: pointer;">
+            <button class="report-export-button" type="button">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1.1rem; height: 1.1rem;"><path d="M12 5v14" /><path d="M5 12h14" /></svg>
                 CSV
             </button>
         </div>
 
-        <div class="report-card">
+        <div class="reports-grid">
+            <div class="report-card report-card-full">
             <h2>Fleet utilization</h2>
             <div class="report-chart">
                 <div class="report-bar" style="height: 60%;"><span>FL-2201</span></div>
@@ -114,8 +115,8 @@
             </table>
         </div>
 
-        <div class="report-card">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 1rem;">
+        <div class="report-card report-card-side">
+            <div class="report-card-header">
                 <div>
                     <h2>Maintenance cost summary</h2>
                 </div>
@@ -149,8 +150,8 @@
             </table>
         </div>
 
-        <div class="report-card">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 1rem;">
+        <div class="report-card report-card-side">
+            <div class="report-card-header">
                 <div>
                     <h2>Fuel consumption estimates</h2>
                 </div>
@@ -195,7 +196,7 @@
         grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 1rem;
         align-items: end;
-        min-height: 220px;
+        min-height: 180px;
         padding: 1rem 0;
         border-bottom: 1px solid #e2e8f0;
         margin-bottom: 1rem;
@@ -203,6 +204,57 @@
 
     .report-chart-green {
         background: #f8fafc;
+    }
+
+    .reports-grid {
+        display: grid;
+        gap: 1.75rem;
+    }
+
+    .report-card-full {
+        grid-column: 1 / -1;
+    }
+
+    .report-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .report-header {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .report-header h1 {
+        margin: 0 0 0.5rem 0;
+        font-size: clamp(1.75rem, 2.5vw, 2.25rem);
+    }
+
+    .report-header p {
+        margin: 0;
+        color: #64748b;
+        font-size: 0.95rem;
+    }
+
+    .report-export-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.8rem 1.25rem;
+        background: #ffffff;
+        color: #0f172a;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.85rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
     }
 
     .report-bar {
@@ -275,6 +327,12 @@
     @media (max-width: 980px) {
         .report-chart {
             grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (min-width: 1160px) {
+        .reports-grid {
+            grid-template-columns: 1.45fr 0.9fr;
         }
     }
 
