@@ -106,7 +106,16 @@
                     </thead>
                     <tbody>
                         @foreach ($drivers as $driver)
-                            <tr>
+                            <tr
+                                data-driver-id="{{ $driver->id }}"
+                                data-name="{{ $driver->name }}"
+                                data-license="{{ $driver->license_number }}"
+                                data-expiry="{{ $driver->license_expiry->format('Y-m-d') }}"
+                                data-contact="{{ $driver->contact }}"
+                                data-email="{{ $driver->email ?? '' }}"
+                                data-status="{{ $driver->status }}"
+                                data-vehicle="{{ $driver->assigned_vehicle ?? '– Unassigned –' }}"
+                            >
                                 <td>{{ $driver->name }}</td>
                                 <td>{{ $driver->license_number }}</td>
                                 <td>
@@ -157,37 +166,38 @@
             </button>
         </div>
 
-        <form class="modal-body">
+        <form class="modal-body" method="POST" action="{{ route('drivers.store') }}">
+            @csrf
             <div class="form-row">
                 <div class="form-group">
                     <label>Full name</label>
-                    <input type="text" placeholder="e.g., John Doe" class="form-input">
+                    <input name="name" type="text" placeholder="e.g., John Doe" class="form-input" required>
                 </div>
                 <div class="form-group">
                     <label>License number</label>
-                    <input type="text" placeholder="e.g., DL-2024-001" class="form-input">
+                    <input name="license_number" type="text" placeholder="e.g., DL-2024-001" class="form-input" required>
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label>License expiry</label>
-                    <input type="date" placeholder="mm/dd/yyyy" class="form-input">
+                    <input name="license_expiry" type="date" class="form-input" required>
                 </div>
                 <div class="form-group">
                     <label>Contact</label>
-                    <input type="tel" placeholder="e.g., +1 (555) 123-4567" class="form-input">
+                    <input name="contact" type="tel" placeholder="e.g., +1 (555) 123-4567" class="form-input" required>
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label>Email (optional)</label>
-                    <input type="email" placeholder="e.g., john@example.com" class="form-input">
+                    <input name="email" type="email" placeholder="e.g., john@example.com" class="form-input">
                 </div>
                 <div class="form-group">
                     <label>Status</label>
-                    <select class="form-input">
+                    <select name="status" class="form-input" required>
                         <option>Active</option>
                         <option>Inactive</option>
                         <option>On leave</option>
@@ -198,7 +208,7 @@
 
             <div class="form-group">
                 <label>Assigned vehicle</label>
-                <select class="form-input">
+                <select name="assigned_vehicle" class="form-input">
                     <option>– Unassigned –</option>
                     <option>FL-2201 (Toyota Camry)</option>
                     <option>FL-3315 (Honda CR-V)</option>
@@ -294,6 +304,114 @@
         border-radius: 1.5rem;
     }
 
+    .drivers-table-wrapper {
+        overflow-x: auto;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 1.5rem;
+        padding: 1rem;
+    }
+
+    .drivers-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 900px;
+    }
+
+    .drivers-table th,
+    .drivers-table td {
+        padding: 1rem 1.25rem;
+        text-align: left;
+        border-bottom: 1px solid #e2e8f0;
+        vertical-align: middle;
+    }
+
+    .drivers-table thead th {
+        color: #334155;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+    }
+
+    .drivers-table tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    .status-badge,
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.4rem 0.7rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .status-active {
+        background: #d1fae5;
+        color: #166534;
+    }
+
+    .status-inactive {
+        background: #e2e8f0;
+        color: #475569;
+    }
+
+    .status-on-leave {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-suspended {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .badge-warning {
+        background: #fef3c7;
+        color: #b45309;
+    }
+
+    .badge-danger {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .actions-cell {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .action-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 0.75rem;
+        background: #ffffff;
+        color: #334155;
+        cursor: pointer;
+        transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .action-button:hover {
+        background: #f8fafc;
+        border-color: #94a3b8;
+    }
+
+    .delete-button {
+        color: #b91c1c;
+        border-color: #fecaca;
+    }
+
+    .delete-button:hover {
+        background: #fee2e2;
+    }
+
     /* Modal Styles */
     .modal {
         display: none;
@@ -303,6 +421,8 @@
         width: 100%;
         height: 100%;
         z-index: 1000;
+        align-items: center;
+        justify-content: center;
     }
 
     .modal.active {
@@ -323,9 +443,9 @@
         position: relative;
         background: #ffffff;
         border-radius: 1rem;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
         width: 90%;
-        max-width: 600px;
+        max-width: 720px;
         margin: auto;
         max-height: 90vh;
         overflow-y: auto;
@@ -455,11 +575,17 @@
         background: #1e40af;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
+        .drivers-table {
+            min-width: 0;
+        }
+
         .form-row {
             grid-template-columns: 1fr;
         }
+    }
 
+    @media (max-width: 768px) {
         .modal-content {
             width: 95%;
         }
@@ -481,11 +607,40 @@
         document.getElementById('addDriverModal').classList.remove('active');
     }
 
-    // Close modal when clicking outside
+    function openEditDriverModal(driverId) {
+        var driver = document.querySelector('[data-driver-id="' + driverId + '"]');
+        if (!driver) {
+            return;
+        }
+
+        var editForm = document.getElementById('editDriverForm');
+        editForm.action = '{{ url("drivers") }}/' + driverId;
+
+        document.getElementById('editName').value = driver.getAttribute('data-name');
+        document.getElementById('editLicenseNumber').value = driver.getAttribute('data-license');
+        document.getElementById('editLicenseExpiry').value = driver.getAttribute('data-expiry');
+        document.getElementById('editContact').value = driver.getAttribute('data-contact');
+        document.getElementById('editEmail').value = driver.getAttribute('data-email');
+        document.getElementById('editStatus').value = driver.getAttribute('data-status');
+        document.getElementById('editAssignedVehicle').value = driver.getAttribute('data-vehicle') || '– Unassigned –';
+
+        document.getElementById('editDriverModal').classList.add('active');
+    }
+
+    function closeEditDriverModal() {
+        document.getElementById('editDriverModal').classList.remove('active');
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('addDriverModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeAddDriverModal();
+            }
+        });
+
+        document.getElementById('editDriverModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditDriverModal();
             }
         });
     });
