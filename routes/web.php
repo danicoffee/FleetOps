@@ -37,8 +37,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('leave-requests', LeaveRequestController::class);
     Route::resource('vehicles', VehicleController::class);
     Route::resource('drivers', DriverController::class);
+    Route::resource('maintenance', MaintenanceController::class);
     Route::get('trip-logs', [TripLogController::class, 'index'])->name('trip-logs.index');
-    Route::get('maintenance', [MaintenanceController::class, 'index'])->name('maintenance.index');
     Route::get('reports', [ReportsController::class, 'index'])->name('reports');
 
     Route::middleware('role:Fleet Manager')->prefix('admin')->name('admin.')->group(function () {

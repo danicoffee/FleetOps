@@ -16,4 +16,14 @@ class Vehicle extends Model
         'odometer' => 'integer',
         'maintenance_interval' => 'integer',
     ];
+
+    public function maintenance()
+    {
+        return $this->hasMany(Maintenance::class);
+    }
+
+    public function getVehicleNumberAttribute()
+    {
+        return $this->plate_number;
+    }
 }
