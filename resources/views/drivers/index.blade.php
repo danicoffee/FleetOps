@@ -56,6 +56,7 @@
                 </a>
             </nav>
         </div>
+        
 
         <div class="sidebar-card sidebar-footer">
             <div class="sidebar-footer-title">Fleet Manager</div>

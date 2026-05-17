@@ -10,38 +10,111 @@ use App\Http\Controllers\DriverController;
 use App\Http\Controllers\MaintenanceController;
 use Illuminate\Support\Facades\Route;
 
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/', function () {
     return auth()->check()
         ? redirect()->route('dashboard')
-        : redirect()->route('login.show');
+        : redirect()->route('login');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Guest Routes
+|--------------------------------------------------------------------------
+*/
 
 Route::middleware('guest')->group(function () {
-    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login'])->name('login.perform');
 
-    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register'])->name('register.perform');
+    // LOGIN
+    Route::get('/login', [AuthController::class, 'showLogin'])
+        ->name('login');
 
-    Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
-    Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
-    Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
-    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+    Route::post('/login', [AuthController::class, 'login'])
+        ->name('login.perform');
+
+    // REGISTER
+    Route::get('/register', [AuthController::class, 'showRegister'])
+        ->name('register');
+
+    Route::post('/register', [AuthController::class, 'register'])
+        ->name('register.perform');
+
+    // FORGOT PASSWORD
+    Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])
+        ->name('password.request');
+
+    Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])
+        ->name('password.email');
+
+    // RESET PASSWORD
+    Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])
+        ->name('password.reset');
+
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])
+        ->name('password.update');
 });
 
-Route::middleware('auth')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+/*
+|--------------------------------------------------------------------------
+| Authenticated Routes
+|--------------------------------------------------------------------------
+*/
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::middleware('auth')->group(function () {
+
+    // LOGOUT
+    Route::post('/logout', [AuthController::class, 'logout'])
+        ->name('logout');
+
+    // DASHBOARD
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard');
+
+    /*
+    |--------------------------------------------------------------------------
+    | RESOURCE ROUTES
+    |--------------------------------------------------------------------------
+    */
 
     Route::resource('leave-requests', LeaveRequestController::class);
-    Route::resource('vehicles', VehicleController::class);
-    Route::resource('drivers', DriverController::class);
-    Route::resource('maintenance', MaintenanceController::class);
-    Route::get('trip-logs', [TripLogController::class, 'index'])->name('trip-logs.index');
-    Route::get('reports', [ReportsController::class, 'index'])->name('reports');
 
-    Route::middleware('role:Fleet Manager')->prefix('admin')->name('admin.')->group(function () {
-        Route::get('reports', [DashboardController::class, 'index'])->name('reports');
-    });
+    Route::resource('vehicles', VehicleController::class);
+
+    Route::resource('drivers', DriverController::class);
+
+    Route::resource('maintenance', MaintenanceController::class);
+
+    // FIXED TRIP LOG ROUTES
+    Route::resource('trip-logs', TripLogController::class);
+
+    /*
+    |--------------------------------------------------------------------------
+    | REPORTS
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/reports', [ReportsController::class, 'index'])
+        ->name('reports');
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN ROUTES
+    |--------------------------------------------------------------------------
+    */
+
+    Route::middleware('role:Fleet Manager')
+        ->prefix('admin')
+        ->name('admin.')
+        ->group(function () {
+
+            Route::get('/reports', [DashboardController::class, 'index'])
+                ->name('reports');
+
+        });
+
 });
